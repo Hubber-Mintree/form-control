@@ -17,7 +17,7 @@
 
             const object = {}
 
-            const inputs = api.findAll(elt, 'input')
+            const inputs = htmx.findAll(elt, 'input')
             inputs.forEach(function(input_elt) {
                 let key = input_elt.getAttribute('name')
                 let value = input_elt.getAttribute('value')
