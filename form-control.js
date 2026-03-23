@@ -8,7 +8,7 @@
 
         onEvent: function (name, evt) {
             if (name === 'htmx:configRequest') {
-                evt.detail.headers['Content-Type'] = 'application-json'
+                evt.detail.headers['Content-Type'] = 'application/json'
             }
         },
 
@@ -24,10 +24,10 @@
                 form_elt = htmx.find('form')
             }
 
-            const inputs = htmx.findAll(form_elt, 'input').concat(htmx.findAll(form_elt, 'textarea'))
+            inputs = htmx.findAll(form_elt, 'input, textarea')
             inputs.forEach(function(input_elt) {
-                let key = input_elt.getAttribute('name')
-                let value = input_elt.getAttribute('value')
+                let key = input_elt.name
+                let value = input_elt.value
                 if (key !== null && value !== null) {
                     switch(input_elt.getAttribute('js-type')) {
                         case 'number':
