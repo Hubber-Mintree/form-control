@@ -43,7 +43,7 @@
                         }
                     } else if (key === 'empty') {
                         if (!Object.hasOwn(object, key)) {
-                            object[key] = []
+                            object[key] = new Array()
                         }
                     }
                 }
