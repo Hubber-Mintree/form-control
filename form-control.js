@@ -24,22 +24,20 @@
                 form_elt = htmx.find('form')
             }
 
-            const inputs = htmx.findAll(form_elt, 'input')
+            const inputs = htmx.findAll(form_elt, 'input').concat(htmx.findAll(form_elt, 'textarea'))
             inputs.forEach(function(input_elt) {
                 let key = input_elt.getAttribute('name')
                 let value = input_elt.getAttribute('value')
                 if (key !== null && value !== null) {
                     switch(input_elt.getAttribute('js-type')) {
                         case 'number':
-                            addValue(Number(value))
+                            addValue(object, key, Number(value))
                             break
                         case 'boolean':
-                            object[key] = addValue(value === 'true')
+                            addValue(object, key, value === 'true')
                             break
                         default:
-                            object[key] = addValue(escapeHtml(value))
-                            break
-                        case null:
+                            addValue(object, key, escapeHtml(value))
                             break
                     }
                 }
