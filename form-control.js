@@ -28,17 +28,23 @@
             inputs.forEach(function(input_elt) {
                 let key = input_elt.name
                 let value = input_elt.value
-                if (key !== null && value !== null) {
-                    switch(input_elt.getAttribute('js-type')) {
-                        case 'number':
-                            addValue(object, key, Number(value))
-                            break
-                        case 'boolean':
-                            addValue(object, key, value === 'true')
-                            break
-                        default:
-                            addValue(object, key, escapeHtml(value))
-                            break
+                if (key !== null) {
+                    if (value !== null) {
+                        switch(input_elt.getAttribute('js-type')) {
+                            case 'number':
+                                addValue(object, key, Number(value))
+                                break
+                            case 'boolean':
+                                addValue(object, key, value === 'true')
+                                break
+                            default:
+                                addValue(object, key, escapeHtml(value))
+                                break
+                        }
+                    } else if (key === 'empty') {
+                        if (!Object.hasOwn(object, key)) {
+                            object[key] = []
+                        }
                     }
                 }
             })
