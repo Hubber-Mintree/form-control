@@ -17,7 +17,14 @@
 
             const object = {}
 
-            const inputs = htmx.findAll(elt, 'input')
+            let form_name = elt.getAttribute('form')
+            if (form_name) {
+                form_elt = htmx.find('#'.concat(form_name))
+            } else {
+                form_elt = htmx.find('form')
+            }
+
+            const inputs = htmx.findAll(form_elt, 'input')
             inputs.forEach(function(input_elt) {
                 let key = input_elt.getAttribute('name')
                 let value = input_elt.getAttribute('value')
