@@ -1,7 +1,7 @@
 (function (){
     let api
 
-    HTMLTextAreaElement.defineExtension('form-control', {
+    htmx.defineExtension('form-control', {
         init: function (apiRef) {
             api = apiRef
         },
