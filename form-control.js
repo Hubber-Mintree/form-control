@@ -26,8 +26,8 @@
 
             inputs = htmx.findAll(form_elt, 'input, textarea')
             inputs.forEach(function(input_elt) {
-                let key = input_elt.name
-                let value = input_elt.value
+                let key = input_elt.getAttribute('name')
+                let value = input_elt.getAttribute('value')
                 if (key !== null) {
                     if (value !== null) {
                         switch(input_elt.getAttribute('js-type')) {
@@ -41,9 +41,13 @@
                                 addValue(object, key, escapeHtml(value))
                                 break
                         }
-                    } else if (key === 'empty') {
+                    } else if (input_elt.getAttribute('js-type') === 'empty') {
                         if (!Object.hasOwn(object, key)) {
                             object[key] = new Array()
+                        } else if (!Array.isArray(object[key])){
+                            let tmp = object[key]
+                            object[key] = new Array()
+                            object[key].push(tmp)
                         }
                     }
                 }
@@ -52,6 +56,8 @@
         }
     })
 
+    // Copied from mustache.js under MIT license
+    // https://github.com/janl/mustache.js/
     var entityMap = {
     '&': '&amp;',
     '<': '&lt;',
@@ -68,6 +74,7 @@
         return entityMap[s];
     })
     }
+    // END COPIED CODE
 
     function addValue(obj, key, val) {
         if (Object.hasOwn(obj, key)){
