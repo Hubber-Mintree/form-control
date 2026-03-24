@@ -17,37 +17,41 @@
 
             const object = {}
 
-            let form_name = elt.getAttribute('form')
-            if (form_name) {
-                form_elt = htmx.find('#'.concat(form_name))
+            let form_id = elt.getAttribute('form')
+            if (form_id) {
+                form_elt = htmx.find('#'.concat(form_id))
             } else {
                 form_elt = htmx.find('form')
             }
 
-            inputs = htmx.findAll(form_elt, 'input, textarea')
+            inputs = htmx.findAll(form_elt, 'input, textarea, select')
             inputs.forEach(function(input_elt) {
-                let key = input_elt.getAttribute('name')
-                let value = input_elt.getAttribute('value')
+                let key = input_elt.name
+                let value = input_elt.value
                 if (key !== null) {
+                    switch(input_elt.type) {
+                        case 'checkbox':
+                            value = input_elt.checked
+                            break
+                        default:
+                            break
+                    }
                     if (value !== null) {
                         switch(input_elt.getAttribute('js-type')) {
+                            case 'array':
+                                addValue(object, key, new Array())
+                                break
                             case 'number':
                                 addValue(object, key, Number(value))
                                 break
                             case 'boolean':
                                 addValue(object, key, value === 'true')
                                 break
+                            case 'ignore':
+                                break
                             default:
                                 addValue(object, key, escapeHtml(value))
                                 break
-                        }
-                    } else if (input_elt.getAttribute('js-type') === 'empty') {
-                        if (!Object.hasOwn(object, key)) {
-                            object[key] = new Array()
-                        } else if (!Array.isArray(object[key])){
-                            let tmp = object[key]
-                            object[key] = new Array()
-                            object[key].push(tmp)
                         }
                     }
                 }
