@@ -35,9 +35,7 @@ Add attribute fc-enc to the element triggering the request in order to specify t
 Values from the form's descendant elements are encoded before those of elements external to the form.
 
 Supported values for ```fc-enc``` are as follows:
-
 - 'json'
-
 - 'url'
 
 ```HTML
@@ -52,15 +50,10 @@ Form-control relies solely on the attribute ```fc-type``` for typing values whil
 attribute will be encoded as a string.
 
 Supported values for ```fc-type``` are as follows:
-
 - "number": integer and floating point values
-
 - "boolean": boolean values, either literals or string representations
-
 - "array": for initializing arrays
-
 - "ignore": for not including values in encoded data
-
 - any other element with a valid value property is encoded as a string
 
 Examples
