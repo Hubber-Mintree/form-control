@@ -41,7 +41,7 @@ Supported values for ```fc-enc``` are as follows:
 ```HTML
 <form id="my_form">
 </form>
-<button form="my_form" hx-ext="form-control" fc-enc='json' hx-post="/my/api" hx-swap="outerHTML" hx-target="body" type="submit">
+<button form="my_form" hx-ext="form-control" fc-enc="json" hx-post="/my/api" hx-swap="outerHTML" hx-target="body" type="submit">
 ```
 
 ## Typing
