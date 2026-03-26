@@ -1,5 +1,6 @@
 (function (){
     let api
+    let encoding = 'url'
 
     htmx.defineExtension('form-control', {
         init: function (apiRef) {
@@ -8,55 +9,41 @@
 
         onEvent: function (name, evt) {
             if (name === 'htmx:configRequest') {
-                evt.detail.headers['Content-Type'] = 'application/json'
+                if (evt.target.getAttribute('fc-enc') === 'json') {
+                    encoding = 'json'
+                    evt.detail.headers['Content-Type'] = 'application/json'
+                }
             }
         },
 
         encodeParameters: function (xhr, parameters, elt) {
-            xhr.overrideMimeType('application/json')
+            let form
+            if (elt.nodeName === 'FORM') {
+                form = elt
+            } else if (elt.hasOwn('form')) {
+                form = elt.form
+            } else {
+                throw new Error('Form element could not be found, check that hx-ext is set on an appropriate element')
+            }
 
             const object = {}
 
-            let form_id = elt.getAttribute('form')
-            if (form_id) {
-                form_elt = htmx.find('#'.concat(form_id))
-            } else {
-                form_elt = htmx.find('form')
+            // Collect values from elements inside form and those outside the form associated via the form attribute
+            objectify(object, form.querySelectorAll('*'))
+            if (form.hasAttribute('id')) {
+                const outer_nodes = htmx.findAll('[form=${form.id}]:not(#${form.id} *)')
+                if (outer_nodes.length > 0) {
+                    objectify(object, outer_nodes)
+                }
             }
 
-            inputs = htmx.findAll(form_elt, 'input, textarea, select')
-            inputs.forEach(function(input_elt) {
-                let key = input_elt.name
-                let value = input_elt.value
-                if (key !== null) {
-                    switch(input_elt.type) {
-                        case 'checkbox':
-                            value = input_elt.checked
-                            break
-                        default:
-                            break
-                    }
-                    if (value !== null) {
-                        switch(input_elt.getAttribute('js-type')) {
-                            case 'array':
-                                addValue(object, key, new Array())
-                                break
-                            case 'number':
-                                addValue(object, key, Number(value))
-                                break
-                            case 'boolean':
-                                addValue(object, key, value === 'true')
-                                break
-                            case 'ignore':
-                                break
-                            default:
-                                addValue(object, key, escapeHtml(value))
-                                break
-                        }
-                    }
-                }
-            })
-            return (JSON.stringify(object))
+            if (encoding === 'json') {
+                xhr.overrideMimeType('application/json')
+                return (JSON.stringify(object))
+            } else {
+                const params = new URLSearchParams(Object.entries(object))
+                return params.toString()
+            }
         }
     })
 
@@ -79,6 +66,49 @@
     })
     }
     // END COPIED CODE
+
+    function objectify(obj, nodes) {
+        for (const node of nodes) {
+            const key = node.name
+            let value = node.value
+            const type = node.type
+
+            if (key != null) {
+                switch(type) {
+                    case 'checkbox':
+                        value = node.checked
+                        break
+                    case 'radio':
+                        // null value to skip unchecked radio
+                        if (!node.checked) {
+                            value = null
+                        }
+                        break
+                    default:
+                        break
+                }
+
+                if (value != null) {
+                    switch(node.getAttribute('fc-type')) {
+                        case 'array':
+                            addValue(object, key, new Array())
+                            break
+                        case 'number':
+                            addValue(object, key, Number(value))
+                            break
+                        case 'boolean':
+                            addValue(object, key, value || value === 'true')
+                            break
+                        case 'ignore':
+                            break
+                        default:
+                            addValue(object, key, escapeHtml(value))
+                            break
+                    }
+                }
+            }
+        }
+    }
 
     function addValue(obj, key, val) {
         if (Object.hasOwn(obj, key)){
